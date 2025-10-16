@@ -35,13 +35,19 @@ const upload = multer({ storage: storage });
 
 
 
-// ✅ Serve static files from the LandingPage folder
+const path = require("path");
+
+// ✅ Serve LandingPage folder
 app.use(express.static(path.join(__dirname, "LandingPage")));
 
-// ✅ Route for the homepage
+// ✅ Serve Content folder too
+app.use(express.static(path.join(__dirname, "Content")));
+
+// ✅ Default route
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "LandingPage", "landingpage.html"));
 });
+
 // ✅ MongoDB connection
 mongoose
   .connect("mongodb+srv://Furfecth:GoL9wi9bgpvppmiv@cluster0.s8s9fru.mongodb.net/", {
