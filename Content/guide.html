@@ -195,7 +195,7 @@ document.getElementById("profileInput").addEventListener("change", async functio
   formData.append("profileImage", file);
   formData.append("email", email);
   try {
-    const res = await fetch("http://localhost:5000/api/upload-profile", { method: "POST", body: formData });
+    const res = await fetch("http://https://furfecth.onrender.com/api/upload-profile", { method: "POST", body: formData });
     const data = await res.json();
     if (data.success) document.getElementById("profilePic").src = data.profileImage;
     else alert("Failed to upload profile picture.");

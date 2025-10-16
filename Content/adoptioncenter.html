@@ -331,7 +331,7 @@ async function loadUser() {
   const email = sessionStorage.getItem("userEmail");
   if (!email) return;
   try {
-    const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/user?email=${email}`);
     const data = await res.json();
     if (data.success) {
       document.getElementById("username").textContent = data.firstName;
@@ -342,7 +342,7 @@ async function loadUser() {
 
 async function loadPets() {
   try {
-    const res = await fetch("http://localhost:5000/api/pets/get-pets");
+    const res = await fetch("https://furfecth.onrender.com/api/pets/get-pets");
     const data = await res.json();
     const grid = document.getElementById("petsGrid");
     grid.innerHTML = "";
@@ -351,14 +351,14 @@ async function loadPets() {
       const email = sessionStorage.getItem("userEmail");
 
       // Fetch ALL adoption requests (global view)
-      const allRes = await fetch("http://localhost:5000/api/adoptions/all");
+      const allRes = await fetch("https://furfecth.onrender.com/api/adoptions/all");
       const allData = await allRes.json();
       const allRequests = allData.success ? allData.requests : [];
 
       // Fetch CURRENT USER adoption requests
       let userRequests = [];
       if (email) {
-        const reqRes = await fetch(`http://localhost:5000/api/adoptions/user?email=${email}`);
+        const reqRes = await fetch(`https://furfecth.onrender.com/api/adoptions/user?email=${email}`);
         const reqData = await reqRes.json();
         if (reqData.success) userRequests = reqData.requests;
       }
@@ -444,7 +444,7 @@ document.getElementById("profileInput").addEventListener("change", async functio
   const email = sessionStorage.getItem("userEmail"); if (!email) return alert("No email found!");
   const formData = new FormData(); formData.append("profileImage", file); formData.append("email", email);
   try {
-    const res = await fetch("http://localhost:5000/api/upload-profile", { method: "POST", body: formData });
+    const res = await fetch("https://furfecth.onrender.com/api/upload-profile", { method: "POST", body: formData });
     const data = await res.json();
     if (data.success) document.getElementById("profilePic").src = data.profileImage;
   } catch (err) { console.error(err); }
