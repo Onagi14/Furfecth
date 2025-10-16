@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
-
+const path = require("path");
 const nodemailer = require("nodemailer");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -32,6 +32,16 @@ app.use(cors());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+
+
+
+// ✅ Serve static files from the LandingPage folder
+app.use(express.static(path.join(__dirname, "LandingPage")));
+
+// ✅ Route for the homepage
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "LandingPage", "landingpage.html"));
+});
 // ✅ MongoDB connection
 mongoose
   .connect("mongodb+srv://Furfecth:GoL9wi9bgpvppmiv@cluster0.s8s9fru.mongodb.net/", {
