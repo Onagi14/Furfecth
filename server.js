@@ -37,10 +37,8 @@ const upload = multer({ storage: storage });
 
 
 
-// ✅ Serve LandingPage folder
+// ✅ Serve static files from both folders
 app.use(express.static(path.join(__dirname, "LandingPage")));
-
-// ✅ Serve Content folder too
 app.use(express.static(path.join(__dirname, "Content")));
 
 // ✅ Default route
