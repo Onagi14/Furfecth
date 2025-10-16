@@ -119,6 +119,13 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Nodemailer transport error:", error);
+  } else {
+    console.log("✅ Nodemailer is ready to send emails.");
+  }
+});
 
 /**
  * PATCH update adoption status (approve/decline) + send email
