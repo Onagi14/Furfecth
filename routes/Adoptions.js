@@ -155,4 +155,18 @@ router.patch("/:id/status", async (req, res) => {
   }
 });
 
+/**
+ * 🧾 GET all adoption requests (for Reports page)
+ */
+router.get("/all", async (req, res) => {
+  try {
+    const adoptions = await Adoption.find().sort({ createdAt: -1 });
+    res.json({ success: true, requests: adoptions });
+  } catch (err) {
+    console.error("❌ Error fetching adoption reports:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
 module.exports = router;
