@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FurFect Match - Admin Adoption Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E9E3DF;
+  --sidebar: #465C88;
+  --highlight: #FF7A30;
+  --text: #000000;
+  font-family: 'Poppins', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.sidebar {
+  background: var(--sidebar);
+  width: 220px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: white;
+}
+.logo span { color: var(--highlight); }
+
+.profile-wrapper { position: relative; width: 90px; height: 90px; margin-bottom: 10px; }
+.profile-wrapper img {
+  width: 90px; height: 90px;
+  border-radius: 50%; object-fit: cover; border: 2px solid #fff;
+}
+.upload-btn {
+  position: absolute; bottom: 0; right: 0;
+  background: var(--highlight); color: white;
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; justify-content: center; align-items: center;
+  font-size: 16px; font-weight: bold; cursor: pointer; border: 2px solid #fff;
+}
+#profileInput { display: none; }
+
+.username {
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+}
+
+.menu { width: 100%; flex-grow: 1; }
+.menu a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+.menu a.active { color: var(--highlight); font-weight: 600; }
+
+.logout-btn {
+  display: block; 
+  width: 100%; 
+  padding: 10px; 
+  margin-top: 10px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background: var(--highlight);
+  border-radius: 8px;
+  font-weight: 600;
+}
+.logout-btn:hover { background: #e55f0e; color: #fff; }
+
+.topbar {
+  background: var(--sidebar);
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12px 20px;
+}
+.topbar .menu-btn { font-size: 22px; cursor: pointer; display: none; }
+
+.main { flex: 1; display: flex; flex-direction: column; }
+.content { padding: 20px; }
+
+.content h2 { margin-bottom: 10px; }
+.content p { margin-bottom: 30px; color: #333; }
+
+.section-title {
+  font-weight: 600;
+  margin: 20px 0 15px;
+  color: var(--text);
+}
+
+.upload-form {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+}
+.upload-form input, .upload-form textarea, .upload-form button {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.upload-form button {
+  background: var(--highlight);
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.upload-form button:hover {
+  background: #e55f0e;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  text-align: center;
+}
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 10px 0 5px;
+  color: var(--sidebar);
+}
+.card p {
+  font-size: 13px;
+  color: #444;
+}
+.card .type {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--highlight);
+}
+.card .breed {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+  .sidebar {
+    position: absolute; left: -250px; top: 0; height: 100%; z-index: 1000;
+  }
+  .sidebar.open { left: 0; }
+  .topbar .menu-btn { display: block; }
+  .close-btn {
+    display: block;
+    position: absolute; top: 10px; right: 10px;
+    background: var(--highlight); color: #fff;
+    font-size: 18px; font-weight: bold;
+    width: 28px; height: 28px;
+    border-radius: 50%; text-align: center; line-height: 28px;
+    cursor: pointer;
+  }
+}
+@media (min-width: 769px) { .close-btn { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="close-btn" onclick="toggleSidebar()">×</div>
+  <div class="logo">ADMIN<span>PANEL</span></div>
+  <div class="profile-wrapper">
+    <img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile">
+    <div class="upload-btn" onclick="document.getElementById('profileInput').click()">+</div>
+    <input type="file" id="profileInput" accept="image/*">
+  </div>
+  <div class="username" id="username">ADMIN</div>
+  <div class="menu">
+    <a href="adminDashboard.html">Dashboard</a>
+    <a href="adminAdoptionCenter.html" class="active">Adoption Center</a>
+    <a href="Reports.html">Reports</a>
+    <a href="adminlogin.html" class="logout-btn">🔌 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+    <h2>Adoption Center</h2>
+  </div>
+
+  <div class="content">
+    <h2>Upload Pet for Adoption</h2>
+        <form class="upload-form" id="petForm" enctype="multipart/form-data">
+  <input type="text" id="petName" name="name" placeholder="Pet Name" required>
+  <input type="text" id="petType" name="type" placeholder="Pet Type (Dog/Cat)" required>
+  <input type="text" id="petBreed" name="breed" placeholder="Breed" required>
+  <textarea id="petDesc" name="description" placeholder="Description" rows="3" required></textarea>
+  <input type="file" id="petImage" name="petImage" accept="image/*" required>
+  <button type="submit">Upload Pet</button>
+</form>
+
+
+    <div class="card-grid" id="petGrid"></div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+document.getElementById("profileInput").addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { document.getElementById("profilePic").src = reader.result; };
+  reader.readAsDataURL(file);
+});
+
+// Handle Pet Upload
+document.getElementById("petForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/pets/upload-pet", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (data.success) {
+      this.reset();
+    }
+  } catch (err) {
+    console.error("Upload error:", err);
+  }
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FurFect Match - Adoption Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fffbe9;
+  --sidebar: #f7d79e;
+  --highlight: #f78c56;
+  --card-bg: #d2c5f5;
+  --form-bg: #b8f2a5;
+  font-family: 'Poppins', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { display: flex; min-height: 100vh; background: var(--bg); color: #111114; transition: all 0.3s ease; }
+.sidebar { background: var(--sidebar); width: 220px; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.3s ease; }
+.profile-wrapper { position: relative; width: 90px; height: 90px; margin-bottom: 10px; }
+.profile-wrapper img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
+.upload-btn { position: absolute; bottom: 0; right: 0; background: var(--highlight); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; cursor: pointer; border: 2px solid #fff; }
+#profileInput { display: none; }
+.username { font-weight: 600; margin-bottom: 20px; text-align: center; }
+.menu { width: 100%; flex-grow: 1; }
+.menu a { display: block; padding: 10px; text-decoration: none; color: #111114; font-weight: 500; border-bottom: 1px solid black; }
+.menu a.active { color: var(--highlight); font-weight: 600; }
+.logo { text-align: center; font-weight: bold; margin-bottom: 20px; font-size: 18px; }
+.logo span { color: red; }
+.logout-btn { display: block; width: 100%; padding: 10px; margin-top: 10px; text-align: center; text-decoration: none; color: #111114; background: #f78c56; border-radius: 8px; font-weight: 600; }
+.logout-btn:hover { background: #f55c2b; color: white; }
+.topbar { background: #c5b7e9; display: flex; justify-content: flex-start; align-items: center; padding: 12px 20px; }
+.topbar .menu-btn { font-size: 22px; cursor: pointer; display: none; }
+.main { flex: 1; display: flex; flex-direction: column; }
+.content { padding: 20px; }
+.section { background: var(--card-bg); padding: 20px; border-radius: 15px; }
+.section h3 { margin-bottom: 20px; text-align: center; }
+.adoption-form { display: flex; flex-direction: column; gap: 15px; background: var(--form-bg); padding: 20px; border-radius: 12px; max-width: 500px; margin: 0 auto; }
+.adoption-form label { font-weight: 600; margin-bottom: 4px; }
+.adoption-form input, .adoption-form textarea, .adoption-form select { padding: 10px; border-radius: 8px; border: 1px solid #aaa; font-size: 14px; width: 100%; }
+.adoption-form textarea { resize: vertical; min-height: 80px; }
+.adoption-form button { background: var(--highlight); border: none; padding: 12px; border-radius: 8px; font-weight: 600; color: white; cursor: pointer; margin-top: 10px; }
+.adoption-form button:hover { background: #f55c2b; }
+@media (max-width: 768px) { body { flex-direction: column; } .sidebar { position: absolute; left: -250px; top: 0; height: 100%; z-index: 1000; } .sidebar.open { left: 0; } .topbar .menu-btn { display: block; } .close-btn { display: block; position: absolute; top: 10px; right: 10px; background: var(--highlight); color: #fff; font-size: 18px; font-weight: bold; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; cursor: pointer; } }
+@media (min-width: 769px) { .close-btn { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="close-btn" onclick="toggleSidebar()">×</div>
+  <div class="logo">FUR<span>FECT</span> MATCH</div>
+  <div class="profile-wrapper">
+    <img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile">
+    <div class="upload-btn" onclick="document.getElementById('profileInput').click()">+</div>
+    <input type="file" id="profileInput" accept="image/*">
+  </div>
+  <div class="username" id="username">USERNAME</div>
+  <div class="menu">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="carecenter.html">Care Center</a>
+    <a href="adoptioncenter.html" class="active">Adoption Center</a>
+    <a href="guide.html">Guides</a>
+    <a href="login.html" class="logout-btn">🔌 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+  </div>
+
+  <div class="content">
+    <div class="section">
+      <h3>Adoption Application Form 🐾</h3>
+      <form class="adoption-form" id="adoptionForm">
+        <div>
+          <label>Pet Name</label>
+          <input type="text" id="petNameInput" name="petName" readonly>
+        </div>
+        <div>
+          <label>Pet Breed</label>
+          <input type="text" id="petBreedInput" name="petBreed" readonly>
+        </div>
+
+        <div>
+  <label>Your Full Name</label>
+  <input type="text" id="name" name="requesterName" placeholder="Your full name" required>
+</div>
+<div>
+  <label>Date of Birth</label>
+  <input type="date" id="dob" name="requesterDOB" required>
+</div>
+<div>
+  <label>Contact Number</label>
+  <input type="tel" id="contact" name="requesterContact" placeholder="09XXXXXXXXX" required>
+</div>
+<div>
+  <label>Email</label>
+  <input type="email" id="email" name="requesterEmail" readonly>
+</div>
+<div>
+  <label>Address</label>
+  <textarea id="address" name="requesterAddress" placeholder="Your full address" required></textarea>
+</div>
+
+        <hr>
+<h4>Adopter Qualification Section 🐶🐱</h4>
+
+<div>
+  <label>Do you have previous experience with pets?</label>
+  <select id="experience" name="experience" required>
+    <option value="">Select</option>
+    <option value="yes">Yes, I’ve cared for pets before</option>
+    <option value="no">No, this will be my first time</option>
+  </select>
+</div>
+
+<div>
+  <label>How many hours per day can you spend with your pet?</label>
+  <select id="timeWithPet" name="timeWithPet" required>
+    <option value="">Select</option>
+    <option value=">5">More than 5 hours</option>
+    <option value="2-5">2 to 5 hours</option>
+    <option value="<2">Less than 2 hours</option>
+  </select>
+</div>
+
+<div>
+  <label>Do you have a safe living space for a pet?</label>
+  <select id="livingSpace" name="livingSpace" required>
+    <option value="">Select</option>
+    <option value="yes">Yes, pet-friendly environment</option>
+    <option value="no">No</option>
+  </select>
+</div>
+
+<div>
+  <label>Monthly Budget for Pet Care (₱)</label>
+  <select id="budget" name="budget" required>
+    <option value="">Select</option>
+    <option value=">5000">Above ₱5,000</option>
+    <option value="2000-5000">₱2,000–₱5,000</option>
+    <option value="<2000">Below ₱2,000</option>
+  </select>
+</div>
+
+<div>
+  <label>Why do you want to adopt this pet?</label>
+  <textarea id="reason" name="reason" required></textarea>
+</div>
+
+
+        <button type="submit">Submit Application</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+// Load user data
+async function loadUser() {
+  const email = sessionStorage.getItem("userEmail");
+  if (!email) return;
+  try {
+    const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById("username").textContent = data.firstName;
+      if(data.profileImage) document.getElementById("profilePic").src = data.profileImage;
+      document.getElementById("email").value = email;
+    }
+  } catch (err) { console.error(err); }
+}
+
+// Prefill pet info
+const params = new URLSearchParams(window.location.search);
+document.getElementById("petNameInput").value = params.get("petName") || "";
+document.getElementById("petBreedInput").value = params.get("petBreed") || "";
+
+// Form submit
+document.getElementById("adoptionForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const form = e.target;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  // Simple qualification check
+  if (data.experience === "no" && data.timeWithPet === "<2" && data.budget === "<2000") {
+    alert("Sorry, you might not be qualified to adopt a pet at this time.");
+    return;
+  }
+
+  const response = await fetch("http://localhost:5000/api/adoptions/request", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+  const result = await response.json();
+
+  if (result.success) {
+    alert("🎉 Adoption request submitted for review!");
+    window.location.href = "adoptioncenter.html";
+  } else {
+    alert("Error: " + result.message);
+  }
+});
+
+window.onload = loadUser;
+</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FurFect Match - Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdf8e4;
+      --accent: #f78c56;
+      --text: #111114;
+      font-family: 'Poppins', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    hr {
+      border: none;
+      border-top: 2px solid black;
+      margin-bottom: 20px;
+    }
+
+    .form-box {
+      background: #f7d79e;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      padding: 12px;
+      border: 1.5px solid #e3b97f;
+      border-radius: 5px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .login-link {
+      font-size: 13px;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .login-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .submit-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 150px;
+      margin: 15px auto 0;
+      display: block;
+    }
+    .submit-btn:hover {
+      background: #f46c2c;
+    }
+
+    /* Mobile View (already responsive since it's stacked) */
+    @media (max-width: 600px) {
+      .container {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FURFECT MATCH</h1>
+    <h2>USER SIGN IN</h2>
+    <hr>
+    <div class="form-box">
+      <form id="loginForm">
+        <input type="email" name="email" placeholder="EMAIL/USERNAME" required>
+        <input type="password" name="password" placeholder="PASSWORD" required>
+
+        <div id="error-message"></div>
+
+        <div class="login-link">
+          Don’t have an account? <a href="signup.html">Sign up Here.</a>
+        </div>
+
+        <button type="submit" class="submit-btn">SIGN IN</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      const errorDiv = document.getElementById("error-message");
+
+      if (!result.success) {
+        errorDiv.style.color = "red";
+        errorDiv.textContent = result.message;
+      } else {
+        errorDiv.style.color = "green";
+        errorDiv.textContent = result.message;
+
+        // ✅ Save user info
+        localStorage.setItem("userEmail", result.user.email); 
+        localStorage.setItem("user", JSON.stringify(result.user)); // optional, for full name later
+
+        // ✅ Redirect after success
+        setTimeout(() => window.location.href = "dashboard.html", 1000);
+      }
+
+    } catch (err) {
+      document.getElementById("error-message").textContent = "Something went wrong!";
+    }
+  });
+</script>
+
+  </div>
+</body>
+</html>
