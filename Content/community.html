@@ -228,9 +228,9 @@ body {
   </div>
 </div>
 
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="https://furfecth.onrender.com/socket.io/socket.io.js"></script>
 <script>
-const socket = io("http://localhost:5000");
+const socket = io("https://furfecth.onrender.com");
 const messagesDiv = document.getElementById("chatMessages");
 const messageInput = document.getElementById("chatInput");
 const sendBtn = document.getElementById("sendBtn");
@@ -243,7 +243,7 @@ let userName = "User";
 async function loadUser() {
   if (!userEmail) return;
   try {
-    const res = await fetch(`http://localhost:5000/api/user?email=${userEmail}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/user?email=${userEmail}`);
     const data = await res.json();
     if (data.success) {
       userName = data.firstName;
@@ -259,7 +259,7 @@ loadUser();
 // 🟢 Load previous messages
 async function loadMessages() {
   try {
-    const res = await fetch("http://localhost:5000/api/messages");
+    const res = await fetch("https://furfecth.onrender.com/api/messages");
     const data = await res.json();
 
     messagesDiv.innerHTML = "";
@@ -367,7 +367,7 @@ document.getElementById("profileInput").addEventListener("change", async functio
   formData.append("profileImage", file);
   formData.append("email", userEmail);
   try {
-    const res = await fetch("http://localhost:5000/api/upload-profile", { method: "POST", body: formData });
+    const res = await fetch("https://furfecth.onrender.com/api/upload-profile", { method: "POST", body: formData });
     const data = await res.json();
     if (data.success) {
       document.getElementById("profilePic").src = data.profileImage;

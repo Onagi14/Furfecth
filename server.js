@@ -34,7 +34,7 @@ const upload = multer({ storage: storage });
 
 // ✅ MongoDB connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/furfectmatch", {
+  .connect("mongodb+srv://Furfecth:GoL9wi9bgpvppmiv@cluster0.s8s9fru.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

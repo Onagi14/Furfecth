@@ -247,7 +247,7 @@ async function loadUser() {
   if (!email) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/user?email=${email}`);
     const data = await res.json();
 
       // 🔹 Debug: see what the server returns
@@ -274,7 +274,7 @@ document.getElementById("profileInput").addEventListener("change", async functio
   formData.append("email", email);
 
   try {
-    const res = await fetch("http://localhost:5000/api/upload-profile", { method: "POST", body: formData });
+    const res = await fetch("https://furfecth.onrender.com/api/upload-profile", { method: "POST", body: formData });
     const data = await res.json();
     if (data.success) {
       document.getElementById("profilePic").src = data.profileImage;
@@ -289,7 +289,7 @@ async function loadAdoptedPets() {
   if (!email) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/adoptions/user/adopted?email=${email}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/adoptions/user/adopted?email=${email}`);
     const data = await res.json();
     const petsContainer = document.getElementById("adoptedPetsContainer");
     petsContainer.innerHTML = "";

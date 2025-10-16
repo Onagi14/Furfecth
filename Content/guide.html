@@ -179,7 +179,7 @@ async function loadUser() {
   const email = sessionStorage.getItem("userEmail");
   if (!email) return;
   try {
-    const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+    const res = await fetch(`http://https://furfecth.onrender.com/api/user?email=${email}`);
     const data = await res.json();
     if (data.success) {
       document.getElementById("username").textContent = data.firstName;
