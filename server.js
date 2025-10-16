@@ -295,9 +295,8 @@ app.post("/api/contact", async (req, res) => {
 const petsRoutes = require("./routes/Pets");
 app.use("/api/pets", petsRoutes);
 
-const adoptionRoutes = require("./routes/adoptionRoutes"); // ✅ path depends on your structure
+const adoptionRoutes = require("./routes/Adoptions");
 app.use("/api/adoptions", adoptionRoutes);
-
 
 app.get("/api/messages", async (req, res) => {
   try {
