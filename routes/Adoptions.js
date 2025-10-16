@@ -151,7 +151,8 @@ router.patch("/:id/status", async (req, res) => {
         : `Hello ${adoption.requesterName},\n\nUnfortunately, your request to adopt ${adoption.petId?.name || adoption.petName} has been DECLINED.\n\nThank you for understanding,\nFurFect Match`;
 
     await transporter.sendMail({
-      from: '"FurFect Match Admin" <yourgmail@gmail.com>',
+     from: '"FurFect Match Admin" <celestrialioraeth@gmail.com>',
+
       to: adoption.requesterEmail,
       subject,
       text: message,
