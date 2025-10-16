@@ -135,7 +135,7 @@ document.getElementById("profileInput").addEventListener("change", function () {
 
 async function loadAdoptions() {
   try {
-    const res = await fetch("http://https://furfecth.onrender.com/api/adoptions/all");
+    const res = await fetch("api/adoptions/all");
     const data = await res.json();
     if (data.success) {
       const tbody = document.getElementById("adoptersTableBody");
@@ -181,7 +181,7 @@ async function loadAdoptions() {
 
 async function updateStatus(id, newStatus, btnElement) {
   try {
-    const res = await fetch(`http://https://furfecth.onrender.com/api/adoptions/${id}/status`, {
+    const res = await fetch(`api/adoptions/${id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus })

@@ -289,10 +289,10 @@ document.getElementById("profileInput").addEventListener("change", function () {
 });
 async function loadPets() {
   try {
-    const petsRes = await fetch("http://https://furfecth.onrender.com/api/pets/get-pets");
+    const petsRes = await fetch("/api/pets/get-pets");
     const petsData = await petsRes.json();
 
-    const usersRes = await fetch("http://https://furfecth.onrender.com/api/users/count");
+    const usersRes = await fetch("/api/users/count");
     const usersData = await usersRes.json();
     const usersCount = usersData.success ? usersData.count : 0;
 
@@ -337,7 +337,7 @@ async function loadPets() {
 async function deletePet(id) {
   if (!confirm("Are you sure you want to delete this pet?")) return;
   try {
-    const res = await fetch(`http://https://furfecth.onrender.com/api/pets/delete-pet/${id}`, {
+    const res = await fetch(`api/pets/delete-pet/${id}`, {
       method: "DELETE"
     });
     const data = await res.json();
