@@ -35,7 +35,7 @@ const upload = multer({ storage: storage });
 
 
 
-const path = require("path");
+
 
 // ✅ Serve LandingPage folder
 app.use(express.static(path.join(__dirname, "LandingPage")));
