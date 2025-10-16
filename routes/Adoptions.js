@@ -118,7 +118,6 @@ const transporter = nodemailer.createTransport({
     pass: "rdjv wese tqlu docu", // App password
   },
 });
-
 router.patch("/:id/status", async (req, res) => {
   try {
     const { id } = req.params;
@@ -150,18 +149,28 @@ router.patch("/:id/status", async (req, res) => {
         ? `Hello ${adoption.requesterName},\n\nGood news! Your request to adopt ${adoption.petId?.name || adoption.petName} has been APPROVED.\nWe will contact you with further details.\n\nThank you,\nFurFect Match`
         : `Hello ${adoption.requesterName},\n\nUnfortunately, your request to adopt ${adoption.petId?.name || adoption.petName} has been DECLINED.\n\nThank you for understanding,\nFurFect Match`;
 
-    await transporter.sendMail({
-     from: '"FurFect Match Admin" <celestrialioraeth@gmail.com>',
+    console.log("📨 Attempting to send email to:", adoption.requesterEmail);
+    console.log("📤 Email Subject:", subject);
 
+    // Try sending the email and log response or error
+    const info = await transporter.sendMail({
+      from: '"FurFect Match Admin" <celestrialioraeth@gmail.com>',
       to: adoption.requesterEmail,
       subject,
       text: message,
     });
 
+    // Log if mail was sent successfully
+    console.log("✅ Email sent successfully!");
+    console.log("📧 Message ID:", info.messageId);
+    console.log("📩 Preview URL (if using ethereal):", nodemailer.getTestMessageUrl?.(info));
+
     res.json({ success: true, message: `Request ${status} and email sent.` });
+
   } catch (err) {
     console.error("❌ Error updating status:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("💥 Email send error:", err.message);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
 

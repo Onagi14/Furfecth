@@ -388,7 +388,7 @@ function logout() {
   const petData = JSON.parse(sessionStorage.getItem("petData"));
   const email = sessionStorage.getItem("userEmail");
   if (petData && email) {
-    fetch("http://localhost:5000/api/save-pet", {
+    fetch("http://https://furfecth.onrender.com/api/save-pet", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, pet: petData })
