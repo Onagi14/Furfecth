@@ -8,6 +8,8 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const http = require("http");
 const { Server } = require("socket.io");
+require("dotenv").config();
+
 
 // ✅ Models
 const ChatMessage = require("./models/ChatMessage");
