@@ -121,9 +121,10 @@ table tr:hover { background: #f5f5f5; }
     </div>
   </div>
 </div>
-
 <script>
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function toggleSidebar() { 
+  document.getElementById('sidebar').classList.toggle('open'); 
+}
 
 document.getElementById("profileInput").addEventListener("change", function () {
   const file = this.files[0];
@@ -135,8 +136,10 @@ document.getElementById("profileInput").addEventListener("change", function () {
 
 async function loadAdoptions() {
   try {
-    const res = await fetch("api/adoptions/all");
+    // ✅ Fixed URL
+    const res = await fetch("/api/adoptions/all");
     const data = await res.json();
+
     if (data.success) {
       const tbody = document.getElementById("adoptersTableBody");
       tbody.innerHTML = "";
@@ -181,7 +184,8 @@ async function loadAdoptions() {
 
 async function updateStatus(id, newStatus, btnElement) {
   try {
-    const res = await fetch(`api/adoptions/${id}/status`, {
+    // ✅ Fixed URL
+    const res = await fetch(`/api/adoptions/${id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus })
@@ -204,5 +208,6 @@ async function updateStatus(id, newStatus, btnElement) {
 loadAdoptions();
 setInterval(loadAdoptions, 5000);
 </script>
+
 </body>
 </html>
