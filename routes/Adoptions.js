@@ -123,26 +123,32 @@ const transporter = nodemailer.createTransport({
 /**
  * PATCH update adoption status (approve/decline) + send email
  */
+
+
+/**
+ * PATCH update adoption status (approve/decline) + send email (with logging)
+ */
 router.patch("/:id/status", async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
+    console.log("📬 Received request to update status for ID:", id, "to:", status);
+
     if (!["approved", "declined"].includes(status)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid status value." });
+      console.warn("⚠️ Invalid status value received:", status);
+      return res.status(400).json({ success: false, message: "Invalid status value." });
     }
 
     const adoption = await Adoption.findById(id).populate("petId");
     if (!adoption) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Adoption request not found." });
+      console.warn("⚠️ Adoption request not found for ID:", id);
+      return res.status(404).json({ success: false, message: "Adoption request not found." });
     }
 
     adoption.status = status;
     await adoption.save();
+    console.log("✅ Adoption status updated successfully for:", adoption.requesterEmail);
 
     const subject =
       status === "approved"
@@ -154,17 +160,24 @@ router.patch("/:id/status", async (req, res) => {
         ? `Hello ${adoption.requesterName},\n\nGood news! Your request to adopt ${adoption.petId?.name || adoption.petName} has been APPROVED.\nWe will contact you with further details.\n\nThank you,\nFurFect Match`
         : `Hello ${adoption.requesterName},\n\nUnfortunately, your request to adopt ${adoption.petId?.name || adoption.petName} has been DECLINED.\n\nThank you for understanding,\nFurFect Match`;
 
-    await transporter.sendMail({
+    console.log("📨 Preparing to send email to:", adoption.requesterEmail);
+    console.log("📤 Email subject:", subject);
+
+    // --- Attempt to send email ---
+    const info = await transporter.sendMail({
       from: `"FurFect Match Admin" <${process.env.EMAIL_USER}>`,
       to: adoption.requesterEmail,
       subject,
       text: message,
     });
 
+    console.log("✅ Email sendMail() result:", info);
+    console.log("📧 Message sent successfully to:", adoption.requesterEmail);
+
     res.json({ success: true, message: `Request ${status} and email sent.` });
   } catch (err) {
-    console.error("❌ Error updating status:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("❌ Error updating status or sending email:", err);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
 
