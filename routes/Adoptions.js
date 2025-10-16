@@ -2,11 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Adoption = require("../models/Adoption");
 const Pet = require("../models/Pet");
-require("dotenv").config();
-const { Resend } = require("resend"); // ✅ Import Resend
-
-// ✅ Initialize Resend with API key from .env
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
+require("dotenv").config(); // Load .env variables
 
 /**
  * POST adoption request (with worthiness assessment)
@@ -25,22 +22,14 @@ router.post("/request", async (req, res) => {
       timeWithPet,
       livingSpace,
       budget,
-      reason,
+      reason
     } = req.body;
 
+    // Check required fields
     if (
-      !petName ||
-      !petBreed ||
-      !requesterName ||
-      !requesterDOB ||
-      !requesterContact ||
-      !requesterEmail ||
-      !requesterAddress ||
-      !experience ||
-      !timeWithPet ||
-      !livingSpace ||
-      !budget ||
-      !reason
+      !petName || !petBreed || !requesterName || !requesterDOB ||
+      !requesterContact || !requesterEmail || !requesterAddress ||
+      !experience || !timeWithPet || !livingSpace || !budget || !reason
     ) {
       return res.status(400).json({
         success: false,
@@ -86,7 +75,7 @@ router.post("/request", async (req, res) => {
       reason,
       qualificationScore: score,
       recommendation,
-      status: "pending",
+      status: "pending"
     });
 
     await newRequest.save();
@@ -95,14 +84,14 @@ router.post("/request", async (req, res) => {
       success: true,
       message: "Adoption request submitted successfully!",
       score,
-      recommendation,
+      recommendation
     });
   } catch (err) {
     console.error("❌ Error submitting adoption:", err);
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: err.message,
+      error: err.message
     });
   }
 });
@@ -121,7 +110,30 @@ router.get("/all", async (req, res) => {
 });
 
 /**
- * PATCH update adoption status (approve/decline) + send email via Resend
+ * ✉️ Configure Nodemailer using environment variables
+ */
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Nodemailer transport error:", error);
+  } else {
+    console.log("✅ Nodemailer is ready to send emails.");
+  }
+});
+
+/**
+ * PATCH update adoption status (approve/decline) + send email
+ */
+
+
+/**
+ * PATCH update adoption status (approve/decline) + send email (with logging)
  */
 router.patch("/:id/status", async (req, res) => {
   try {
@@ -131,11 +143,13 @@ router.patch("/:id/status", async (req, res) => {
     console.log("📬 Received request to update status for ID:", id, "to:", status);
 
     if (!["approved", "declined"].includes(status)) {
+      console.warn("⚠️ Invalid status value received:", status);
       return res.status(400).json({ success: false, message: "Invalid status value." });
     }
 
     const adoption = await Adoption.findById(id).populate("petId");
     if (!adoption) {
+      console.warn("⚠️ Adoption request not found for ID:", id);
       return res.status(404).json({ success: false, message: "Adoption request not found." });
     }
 
@@ -156,21 +170,18 @@ router.patch("/:id/status", async (req, res) => {
     console.log("📨 Preparing to send email to:", adoption.requesterEmail);
     console.log("📤 Email subject:", subject);
 
-    // ✅ Send email using Resend API
-    const emailResponse = await resend.emails.send({
-      from: "FurFect Match <onboarding@resend.dev>", // ✅ Must match Resend sender domain
+    // --- Attempt to send email ---
+    const info = await transporter.sendMail({
+      from: `"FurFect Match Admin" <${process.env.EMAIL_USER}>`,
       to: adoption.requesterEmail,
       subject,
       text: message,
     });
 
-    console.log("✅ Email sent successfully via Resend:", emailResponse);
+    console.log("✅ Email sendMail() result:", info);
+    console.log("📧 Message sent successfully to:", adoption.requesterEmail);
 
-    res.json({
-      success: true,
-      message: `Request ${status} and email sent.`,
-      emailResponse,
-    });
+    res.json({ success: true, message: `Request ${status} and email sent.` });
   } catch (err) {
     console.error("❌ Error updating status or sending email:", err);
     res.status(500).json({ success: false, message: "Server error", error: err.message });
