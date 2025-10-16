@@ -257,7 +257,7 @@ document.getElementById("petForm").addEventListener("submit", async function(e) 
   const formData = new FormData(this);
 
   try {
-    const res = await fetch("http://localhost:5000/api/pets/upload-pet", {
+    const res = await fetch("http://https://furfecth.onrender.com/api/pets/upload-pet", {
       method: "POST",
       body: formData
     });
