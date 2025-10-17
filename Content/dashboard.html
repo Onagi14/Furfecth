@@ -345,7 +345,7 @@ async function loadPetData() {
 
       // save immediately to backend
       try {
-        const saveRes = await fetch("http://https://furfecth.onrender.com/api/save-pet", {
+        const saveRes = await fetch("https://furfecth.onrender.com/api/save-pet", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, pet: petData })
