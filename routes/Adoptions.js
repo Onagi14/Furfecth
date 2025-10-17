@@ -28,20 +28,10 @@ router.post("/request", async (req, res) => {
       reason,
     } = req.body;
 
-    // Check required fields
     if (
-      !petName ||
-      !petBreed ||
-      !requesterName ||
-      !requesterDOB ||
-      !requesterContact ||
-      !requesterEmail ||
-      !requesterAddress ||
-      !experience ||
-      !timeWithPet ||
-      !livingSpace ||
-      !budget ||
-      !reason
+      !petName || !petBreed || !requesterName || !requesterDOB ||
+      !requesterContact || !requesterEmail || !requesterAddress ||
+      !experience || !timeWithPet || !livingSpace || !budget || !reason
     ) {
       return res.status(400).json({
         success: false,
@@ -59,7 +49,6 @@ router.post("/request", async (req, res) => {
     else if (budget === "2000-5000") score += 10;
     if (reason.length >= 30) score += 10;
 
-    // Recommendation logic
     let recommendation = "Needs Review";
     if (score >= 80) recommendation = "Highly Qualified";
     else if (score >= 60) recommendation = "Qualified";
@@ -129,22 +118,22 @@ router.patch("/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    console.log("📬 Received request to update status for ID:", id, "to:", status);
+    console.log("📬 Updating adoption status:", { id, status });
 
     if (!["approved", "declined"].includes(status)) {
-      console.warn("⚠️ Invalid status value received:", status);
+      console.warn("⚠️ Invalid status:", status);
       return res.status(400).json({ success: false, message: "Invalid status value." });
     }
 
     const adoption = await Adoption.findById(id).populate("petId");
     if (!adoption) {
-      console.warn("⚠️ Adoption request not found for ID:", id);
+      console.warn("⚠️ Adoption request not found:", id);
       return res.status(404).json({ success: false, message: "Adoption request not found." });
     }
 
     adoption.status = status;
     await adoption.save();
-    console.log("✅ Adoption status updated successfully for:", adoption.requesterEmail);
+    console.log("✅ Status updated for:", adoption.requesterEmail);
 
     const subject =
       status === "approved"
@@ -165,17 +154,24 @@ router.patch("/:id/status", async (req, res) => {
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
-      from: "FurFect Match <onboarding@resend.dev>", // Free sender
+      from: "FurFect Match <onboarding@resend.dev>", // free verified sender
       to: adoption.requesterEmail,
       subject,
       html: message,
     });
 
-    console.log("✅ Email sent via Resend! ID:", emailResponse.id);
+    // 🔍 Log response for debugging
+    if (emailResponse && emailResponse.id) {
+      console.log("✅ Email sent successfully via Resend!");
+      console.log("🆔 Email ID:", emailResponse.id);
+      res.json({ success: true, message: `Request ${status} and email sent.`, emailId: emailResponse.id });
+    } else {
+      console.warn("⚠️ Email response did not include an ID:", emailResponse);
+      res.json({ success: true, message: `Request ${status} saved, but email may not have been sent.`, response: emailResponse });
+    }
 
-    res.json({ success: true, message: `Request ${status} and email sent.` });
   } catch (err) {
-    console.error("❌ Error updating status or sending email:", err);
+    console.error("❌ Error sending email or updating status:", err);
     res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
