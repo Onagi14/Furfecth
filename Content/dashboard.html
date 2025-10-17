@@ -324,7 +324,7 @@ async function loadPetData() {
   }
 
   try {
-    const res = await fetch(`http://https://furfecth.onrender.com/api/get-pet?email=${email}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/get-pet?email=${email}`);
     const data = await res.json();
     if (!data.success || !data.pet) return;
 
