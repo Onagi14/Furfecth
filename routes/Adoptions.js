@@ -2,8 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Adoption = require("../models/Adoption");
 const Pet = require("../models/Pet");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 require("dotenv").config(); // Load .env variables
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * POST adoption request (with worthiness assessment)
@@ -22,14 +25,23 @@ router.post("/request", async (req, res) => {
       timeWithPet,
       livingSpace,
       budget,
-      reason
+      reason,
     } = req.body;
 
     // Check required fields
     if (
-      !petName || !petBreed || !requesterName || !requesterDOB ||
-      !requesterContact || !requesterEmail || !requesterAddress ||
-      !experience || !timeWithPet || !livingSpace || !budget || !reason
+      !petName ||
+      !petBreed ||
+      !requesterName ||
+      !requesterDOB ||
+      !requesterContact ||
+      !requesterEmail ||
+      !requesterAddress ||
+      !experience ||
+      !timeWithPet ||
+      !livingSpace ||
+      !budget ||
+      !reason
     ) {
       return res.status(400).json({
         success: false,
@@ -75,7 +87,7 @@ router.post("/request", async (req, res) => {
       reason,
       qualificationScore: score,
       recommendation,
-      status: "pending"
+      status: "pending",
     });
 
     await newRequest.save();
@@ -84,14 +96,14 @@ router.post("/request", async (req, res) => {
       success: true,
       message: "Adoption request submitted successfully!",
       score,
-      recommendation
+      recommendation,
     });
   } catch (err) {
     console.error("❌ Error submitting adoption:", err);
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -110,30 +122,7 @@ router.get("/all", async (req, res) => {
 });
 
 /**
- * ✉️ Configure Nodemailer using environment variables
- */
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Nodemailer transport error:", error);
-  } else {
-    console.log("✅ Nodemailer is ready to send emails.");
-  }
-});
-
-/**
- * PATCH update adoption status (approve/decline) + send email
- */
-
-
-/**
- * PATCH update adoption status (approve/decline) + send email (with logging)
+ * PATCH update adoption status (approve/decline) + send email (Resend)
  */
 router.patch("/:id/status", async (req, res) => {
   try {
@@ -164,22 +153,25 @@ router.patch("/:id/status", async (req, res) => {
 
     const message =
       status === "approved"
-        ? `Hello ${adoption.requesterName},\n\nGood news! Your request to adopt ${adoption.petId?.name || adoption.petName} has been APPROVED.\nWe will contact you with further details.\n\nThank you,\nFurFect Match`
-        : `Hello ${adoption.requesterName},\n\nUnfortunately, your request to adopt ${adoption.petId?.name || adoption.petName} has been DECLINED.\n\nThank you for understanding,\nFurFect Match`;
+        ? `Hello ${adoption.requesterName},<br><br>
+          Good news! Your request to adopt <b>${adoption.petId?.name || adoption.petName}</b> has been <b>APPROVED</b>.<br>
+          We will contact you with further details.<br><br>
+          Thank you,<br>🐾 <b>FurFect Match</b>`
+        : `Hello ${adoption.requesterName},<br><br>
+          Unfortunately, your request to adopt <b>${adoption.petId?.name || adoption.petName}</b> has been <b>DECLINED</b>.<br><br>
+          Thank you for understanding,<br>🐾 <b>FurFect Match</b>`;
 
-    console.log("📨 Preparing to send email to:", adoption.requesterEmail);
-    console.log("📤 Email subject:", subject);
+    console.log("📨 Preparing to send email via Resend to:", adoption.requesterEmail);
 
-    // --- Attempt to send email ---
-    const info = await transporter.sendMail({
-      from: `"FurFect Match Admin" <${process.env.EMAIL_USER}>`,
+    // Send email via Resend
+    const emailResponse = await resend.emails.send({
+      from: "FurFect Match <onboarding@resend.dev>", // Free sender
       to: adoption.requesterEmail,
       subject,
-      text: message,
+      html: message,
     });
 
-    console.log("✅ Email sendMail() result:", info);
-    console.log("📧 Message sent successfully to:", adoption.requesterEmail);
+    console.log("✅ Email sent via Resend! ID:", emailResponse.id);
 
     res.json({ success: true, message: `Request ${status} and email sent.` });
   } catch (err) {
