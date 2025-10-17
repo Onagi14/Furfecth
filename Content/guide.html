@@ -179,7 +179,7 @@ async function loadUser() {
   const email = sessionStorage.getItem("userEmail");
   if (!email) return;
   try {
-    const res = await fetch(`http://https://furfecth.onrender.com/api/user?email=${email}`);
+    const res = await fetch(`https://furfecth.onrender.com/api/user?email=${email}`);
     const data = await res.json();
     if (data.success) {
       document.getElementById("username").textContent = data.firstName;
@@ -195,7 +195,11 @@ document.getElementById("profileInput").addEventListener("change", async functio
   formData.append("profileImage", file);
   formData.append("email", email);
   try {
-    const res = await fetch("http://https://furfecth.onrender.com/api/upload-profile", { method: "POST", body: formData });
+    const res = await fetch("https://furfecth.onrender.com/api/upload-profile", {
+  method: "POST",
+  body: formData
+});
+
     const data = await res.json();
     if (data.success) document.getElementById("profilePic").src = data.profileImage;
     else alert("Failed to upload profile picture.");
