@@ -154,8 +154,8 @@ router.patch("/:id/status", async (req, res) => {
 
     // Send email via Resend
 const emailResponse = await resend.emails.send({
-  from: "FurFect Match <onboarding@resend.dev>", // ✅ built-in test sender
-  to: "sainzcls1655@gmail.com",                   // ✅ your verified login email
+  from: "FurFect Match <sainzcls1655@gmail.com>", // ✅ new Resend account email
+  to: "sainzcls1655@gmail.com",                   // ✅ must match workspace email
   subject: "🎉 Adoption Request Approved!",
   html: message,
 });
