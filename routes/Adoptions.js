@@ -153,13 +153,12 @@ router.patch("/:id/status", async (req, res) => {
     console.log("📨 Preparing to send email via Resend to:", adoption.requesterEmail);
 
     // Send email via Resend
-const emailResponse = await resend.emails.send({
-  from: "FurFect Match <saincls1655@gmail.com>",  // ✅ properly formatted sender
-  to: "saincls1655@gmail.com",                    // ✅ can only send to your own email in free/test mode
-  subject: "🎉 Adoption Request Approved!",
-  html: message,
-});
-
+    const emailResponse = await resend.emails.send({
+      from: "FurFect Match <onboarding@resend.dev>", // free verified sender
+      to: adoption.requesterEmail,
+      subject,
+      html: message,
+    });
 
     // 🔍 Log response for debugging
     if (emailResponse && emailResponse.id) {
