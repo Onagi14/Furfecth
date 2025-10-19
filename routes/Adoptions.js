@@ -109,7 +109,6 @@ router.get("/all", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
-
 /**
  * PATCH update adoption status (approve/decline) + send email (Resend)
  */
@@ -119,6 +118,7 @@ router.patch("/:id/status", async (req, res) => {
     const { status } = req.body;
 
     console.log("📬 Updating adoption status:", { id, status });
+    console.log("🔐 Using RESEND_API_KEY (first 10 chars):", process.env.RESEND_API_KEY?.slice(0, 10) || "❌ NOT FOUND");
 
     if (!["approved", "declined"].includes(status)) {
       console.warn("⚠️ Invalid status:", status);
@@ -150,26 +150,43 @@ router.patch("/:id/status", async (req, res) => {
           Unfortunately, your request to adopt <b>${adoption.petId?.name || adoption.petName}</b> has been <b>DECLINED</b>.<br><br>
           Thank you for understanding,<br>🐾 <b>FurFect Match</b>`;
 
-    console.log("📨 Preparing to send email via Resend to:", adoption.requesterEmail);
+    console.log("📨 Preparing to send email via Resend...");
+    console.log("📧 Recipient:", adoption.requesterEmail);
+    console.log("📤 From:", "FurFect Match <onboarding@resend.dev>");
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
-      from: "FurFect Match <onboarding@resend.dev>", // free verified sender
+      from: "FurFect Match <onboarding@resend.dev>", // must use verified sender
       to: adoption.requesterEmail,
       subject,
       html: message,
     });
 
-    // 🔍 Log response for debugging
-    if (emailResponse && emailResponse.id) {
-      console.log("✅ Email sent successfully via Resend!");
-      console.log("🆔 Email ID:", emailResponse.id);
-      res.json({ success: true, message: `Request ${status} and email sent.`, emailId: emailResponse.id });
-    } else {
-      console.warn("⚠️ Email response did not include an ID:", emailResponse);
-      res.json({ success: true, message: `Request ${status} saved, but email may not have been sent.`, response: emailResponse });
-    }
+    console.log("📬 Raw Resend response:", JSON.stringify(emailResponse, null, 2));
 
+    // 🔍 Log response for debugging
+    if (emailResponse?.data?.id) {
+      console.log("✅ Email sent successfully via Resend!");
+      res.json({
+        success: true,
+        message: `Request ${status} and email sent.`,
+        emailId: emailResponse.data.id,
+      });
+    } else if (emailResponse?.error) {
+      console.error("❌ Resend error:", emailResponse.error);
+      res.status(500).json({
+        success: false,
+        message: "Email sending failed.",
+        resendError: emailResponse.error,
+      });
+    } else {
+      console.warn("⚠️ Unknown email response structure:", emailResponse);
+      res.json({
+        success: true,
+        message: `Request ${status} saved, but email response unclear.`,
+        response: emailResponse,
+      });
+    }
   } catch (err) {
     console.error("❌ Error sending email or updating status:", err);
     res.status(500).json({ success: false, message: "Server error", error: err.message });
